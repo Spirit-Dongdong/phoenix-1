@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.phoenix</groupId>
   <artifactId>phoenix</artifactId>
-  <version>4.5.1-HBase-0.98</version>
+  <version>GIO-1.1</version>
   <packaging>pom</packaging>
   <name>Apache Phoenix</name>
   <description>A SQL layer over HBase</description>
@@ -80,7 +80,7 @@
 
     <!-- Hadoop Versions -->
     <hbase.version>0.98.12-hadoop2</hbase.version>
-    <hadoop-two.version>2.2.0</hadoop-two.version>
+    <hadoop-two.version>2.5.2</hadoop-two.version>
 
     <!-- Dependency versions -->
     <commons-cli.version>1.2</commons-cli.version>
@@ -621,6 +621,10 @@
           <exclusion>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.thtift</groupId>
+            <artifactId>libthrift</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

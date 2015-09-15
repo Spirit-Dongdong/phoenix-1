@@ -18,11 +18,12 @@
 package org.apache.phoenix.spark
 
 import org.apache.hadoop.conf.Configuration
+import org.apache.phoenix.util.StringUtil.escapeStringConstant
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.{UTF8String, StructType}
+import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.sources._
-import org.apache.phoenix.util.StringUtil.escapeStringConstant
+import org.apache.spark.unsafe.types.UTF8String
 
 case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlContext: SQLContext)
     extends BaseRelation with PrunedFilteredScan {

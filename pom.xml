@@ -65,11 +65,12 @@
     <version>14</version>
   </parent>
 
-  <scm>
-    <connection>scm:git:http://git-wip-us.apache.org/repos/asf/phoenix.git</connection>
-    <url>https://git-wip-us.apache.org/repos/asf/phoenix.git</url>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/phoenix.git</developerConnection>
-  </scm>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <url>http://54.223.132.19:8081/nexus/content/repositories/releases</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <!-- General Properties -->
@@ -686,7 +687,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.0.1</version>
+        <version>4.3.2</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>

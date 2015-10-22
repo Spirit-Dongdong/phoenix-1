@@ -92,7 +92,7 @@ public class PhoenixInputFormat<T extends DBWritable> extends InputFormat<NullWr
             for (Scan scan : scans) {
                 List<Scan> list = new ArrayList<Scan>(1);
                 list.add(scan);
-                psplits.add(new PhoenixInputSplit(scans));
+                psplits.add(new PhoenixInputSplit(list));
             }
         }
         return psplits;

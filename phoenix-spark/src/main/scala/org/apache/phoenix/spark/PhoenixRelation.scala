@@ -20,9 +20,9 @@ package org.apache.phoenix.spark
 import org.apache.hadoop.conf.Configuration
 import org.apache.phoenix.util.StringUtil.escapeStringConstant
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.sql.sources._
 import org.apache.spark.unsafe.types.UTF8String
 
 case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlContext: SQLContext)
@@ -81,6 +81,9 @@ case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlC
         case LessThanOrEqual(attr, value) => filter.append(s" $attr <= ${compileValue(value)}")
         case IsNull(attr) => filter.append(s" $attr IS NULL")
         case IsNotNull(attr) => filter.append(s" $attr IS NOT NULL")
+        case StringContains(attr, value) => filter.append(s" $attr like '%$value%'")
+        case StringStartsWith(attr, value) => filter.append(s" $attr like '$value%'")
+        case StringEndsWith(attr, value) => filter.append(s" $attr like '%$value'")
         case _ => throw new Exception("Unsupported filter")
       }
 

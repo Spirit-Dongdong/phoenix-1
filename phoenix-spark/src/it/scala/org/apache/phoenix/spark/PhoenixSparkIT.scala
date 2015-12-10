@@ -16,19 +16,17 @@ package org.apache.phoenix.spark
 import java.sql.{Connection, DriverManager}
 import java.util.Date
 
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hbase.{HBaseConfiguration, HConstants, HBaseTestingUtility}
+import org.apache.hadoop.hbase.HConstants
 import org.apache.phoenix.end2end.BaseHBaseManagedTimeIT
 import org.apache.phoenix.query.BaseTest
-import org.apache.phoenix.schema.{TableNotFoundException, ColumnNotFoundException}
+import org.apache.phoenix.schema.ColumnNotFoundException
 import org.apache.phoenix.schema.types.PVarchar
-import org.apache.phoenix.util.{SchemaUtil, ColumnInfo}
-import org.apache.spark.sql.{SaveMode, execution, SQLContext}
-import org.apache.spark.sql.types.{LongType, DataType, StringType, StructField}
+import org.apache.phoenix.util.{ColumnInfo, SchemaUtil}
+import org.apache.spark.sql.types.{LongType, StringType, StructField}
+import org.apache.spark.sql.{SQLContext, SaveMode}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.DateTime
 import org.scalatest._
-import org.apache.phoenix.spark._
 
 import scala.collection.mutable.ListBuffer
 
@@ -446,5 +444,15 @@ class PhoenixSparkIT extends FunSuite with Matchers with BeforeAndAfterAll {
 
     count shouldEqual 1L
 
+  }
+
+  test("Can execute like query") {
+    val sqlContext = new SQLContext(sc)
+
+    sqlContext.read.format("org.apache.phoenix.spark").options(Map("table" -> "TABLE1", "zkUrl" -> quorumAddress)).load.registerTempTable("sql_table_1")
+
+    val ep = sqlContext.sql("select * from sql_table_1 where COL1 like '%1%2%'")
+    ep.explain
+    ep.count shouldEqual 1L
   }
 }

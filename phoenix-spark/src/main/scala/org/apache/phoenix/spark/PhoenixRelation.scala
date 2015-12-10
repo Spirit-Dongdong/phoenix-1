@@ -23,7 +23,6 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.unsafe.types.UTF8String
 
 case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlContext: SQLContext)
     extends BaseRelation with PrunedFilteredScan {
@@ -74,6 +73,9 @@ case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlC
       }
 
       f match {
+        case And(leftFilter, rightFilter) => filter.append(buildFilter(Array(leftFilter, rightFilter)))
+        case Or(leftFilter, rightFilter) => filter.append(buildFilter(Array(leftFilter)) + " OR " + buildFilter(Array(rightFilter)))
+        case Not(aFilter) => filter.append(" NOT " + buildFilter(Array(aFilter)))
         case EqualTo(attr, value) => filter.append(s" $attr = ${compileValue(value)}")
         case GreaterThan(attr, value) => filter.append(s" $attr > ${compileValue(value)}")
         case GreaterThanOrEqual(attr, value) => filter.append(s" $attr >= ${compileValue(value)}")
@@ -81,10 +83,10 @@ case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlC
         case LessThanOrEqual(attr, value) => filter.append(s" $attr <= ${compileValue(value)}")
         case IsNull(attr) => filter.append(s" $attr IS NULL")
         case IsNotNull(attr) => filter.append(s" $attr IS NOT NULL")
-        case StringContains(attr, value) => filter.append(s" $attr like '%$value%'")
-        case StringStartsWith(attr, value) => filter.append(s" $attr like '$value%'")
-        case StringEndsWith(attr, value) => filter.append(s" $attr like '%$value'")
-        case _ => throw new Exception("Unsupported filter")
+        case In(attr, values) => filter.append(s" $attr IN ${values.map(compileValue).mkString("(", ",", ")")}")
+        case StringStartsWith(attr, value) => filter.append(s" $attr LIKE ${compileValue(value + "%")}")
+        case StringEndsWith(attr, value) => filter.append(s" $attr LIKE ${compileValue("%" + value)}")
+        case StringContains(attr, value) => filter.append(s" $attr LIKE ${compileValue("%" + value + "%")}")
       }
 
       i = i + 1
@@ -96,7 +98,19 @@ case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlC
   // Helper function to escape string values in SQL queries
   private def compileValue(value: Any): Any = value match {
     case stringValue: String => s"'${escapeStringConstant(stringValue)}'"
-    case stringValue: UTF8String => s"'${escapeStringConstant(stringValue.toString)}'"
+
+    // Borrowed from 'elasticsearch-hadoop', support these internal UTF types across Spark versions
+    // Spark 1.4
+    case utf if (isClass(utf, "org.apache.spark.sql.types.UTF8String")) => s"'${escapeStringConstant(utf.toString)}'"
+    // Spark 1.5
+    case utf if (isClass(utf, "org.apache.spark.unsafe.types.UTF8String")) => s"'${escapeStringConstant(utf.toString)}'"
+
+    // Pass through anything else
     case _ => value
   }
+
+  private def isClass(obj: Any, className: String) = {
+    className.equals(obj.getClass().getName())
+  }
+
 }

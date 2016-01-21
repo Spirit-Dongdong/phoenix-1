@@ -128,7 +128,7 @@ class PhoenixRDD(sc: SparkContext, table: String, columns: Seq[String],
     case t if t.isInstanceOf[PInteger] || t.isInstanceOf[PUnsignedInt] => IntegerType
     case t if t.isInstanceOf[PFloat] || t.isInstanceOf[PUnsignedFloat] => FloatType
     case t if t.isInstanceOf[PDouble] || t.isInstanceOf[PUnsignedDouble] => DoubleType
-    case t if t.isInstanceOf[PDecimal] => DecimalType()
+    case t if t.isInstanceOf[PDecimal] => DecimalType(38, 18)
     case t if t.isInstanceOf[PTimestamp] || t.isInstanceOf[PUnsignedTimestamp] => TimestampType
     case t if t.isInstanceOf[PTime] || t.isInstanceOf[PUnsignedTime] => TimestampType
     case t if t.isInstanceOf[PDate] || t.isInstanceOf[PUnsignedDate] => TimestampType

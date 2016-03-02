@@ -425,7 +425,7 @@ public class ConnectionQueryServicesImpl extends DelegateQueryServices implement
          * all region locations from the HTable doesn't.
          */
         int retryCount = 0, maxRetryCount = 1;
-        boolean reload = true;
+        boolean reload = false;
         while (true) {
             try {
                 // We could surface the package projected HConnectionImplementation.getNumberOfCachedRegionLocations
@@ -443,7 +443,7 @@ public class ConnectionQueryServicesImpl extends DelegateQueryServices implement
             } catch (org.apache.hadoop.hbase.TableNotFoundException e) {
                 String fullName = Bytes.toString(tableName);
                 throw new TableNotFoundException(SchemaUtil.getSchemaNameFromFullName(fullName), SchemaUtil.getTableNameFromFullName(fullName));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 if (retryCount++ < maxRetryCount) { // One retry, in case split occurs while navigating
                     reload = true;
                     continue;

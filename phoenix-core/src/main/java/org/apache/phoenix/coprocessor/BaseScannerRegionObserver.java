@@ -88,6 +88,7 @@ abstract public class BaseScannerRegionObserver extends BaseRegionObserver {
     public static final String GUIDEPOST_WIDTH_BYTES = "_GUIDEPOST_WIDTH_BYTES";
     public static final String GUIDEPOST_PER_REGION = "_GUIDEPOST_PER_REGION";
     public static final String UPGRADE_DESC_ROW_KEY = "_UPGRADE_DESC_ROW_KEY";
+    public static final String SKIP_REGION_BOUNDARY_CHECK = "_SKIP_REGION_BOUNDARY_CHECK";
     
     /**
      * Attribute name used to pass custom annotations in Scans and Mutations (later). Custom annotations
@@ -98,6 +99,12 @@ abstract public class BaseScannerRegionObserver extends BaseRegionObserver {
     /** Exposed for testing */
     public static final String SCANNER_OPENED_TRACE_INFO = "Scanner opened on server";
     protected Configuration rawConf;
+
+    protected boolean skipRegionBoundaryCheck(Scan scan) {
+        byte[] skipCheckBytes = scan.getAttribute(SKIP_REGION_BOUNDARY_CHECK);
+        return skipCheckBytes != null && Bytes.toBoolean(skipCheckBytes);
+    }
+
 
     @Override
     public void start(CoprocessorEnvironment e) throws IOException {
@@ -143,7 +150,9 @@ abstract public class BaseScannerRegionObserver extends BaseRegionObserver {
     public RegionScanner preScannerOpen(final ObserverContext<RegionCoprocessorEnvironment> c,
         final Scan scan, final RegionScanner s) throws IOException {
         if (isRegionObserverFor(scan)) {
-            throwIfScanOutOfRegion(scan, c.getEnvironment().getRegion());
+            if (! skipRegionBoundaryCheck(scan)) {
+                throwIfScanOutOfRegion(scan, c.getEnvironment().getRegion());
+            }
             // Muck with the start/stop row of the scan and set as reversed at the
             // last possible moment. You need to swap the start/stop and make the
             // start exclusive and the stop inclusive.

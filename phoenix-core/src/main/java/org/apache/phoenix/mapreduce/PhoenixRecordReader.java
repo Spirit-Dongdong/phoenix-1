@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
@@ -35,6 +36,7 @@ import org.apache.hadoop.mapreduce.lib.db.DBWritable;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.phoenix.compile.QueryPlan;
 import org.apache.phoenix.compile.StatementContext;
+import org.apache.phoenix.coprocessor.BaseScannerRegionObserver;
 import org.apache.phoenix.iterate.ConcatResultIterator;
 import org.apache.phoenix.iterate.LookAheadResultIterator;
 import org.apache.phoenix.iterate.PeekingResultIterator;
@@ -44,6 +46,7 @@ import org.apache.phoenix.iterate.SequenceResultIterator;
 import org.apache.phoenix.iterate.TableResultIterator;
 import org.apache.phoenix.jdbc.PhoenixResultSet;
 import org.apache.phoenix.monitoring.ReadMetricQueue;
+import org.apache.phoenix.query.ConnectionQueryServices;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -107,7 +110,15 @@ public class PhoenixRecordReader<T extends DBWritable> extends RecordReader<Null
             StatementContext ctx = queryPlan.getContext();
             ReadMetricQueue readMetrics = ctx.getReadMetricsQueue();
             String tableName = queryPlan.getTableRef().getTable().getPhysicalName().getString();
+
+            // Clear the table region boundary cache to make sure long running jobs stay up to date
+            byte[] tableNameBytes = queryPlan.getTableRef().getTable().getPhysicalName().getBytes();
+            ConnectionQueryServices services = queryPlan.getContext().getConnection().getQueryServices();
+            services.clearTableRegionCache(tableNameBytes);
+
             for (Scan scan : scans) {
+                // For MR, skip the region boundary check exception if we encounter a split. ref: PHOENIX-2599
+                scan.setAttribute(BaseScannerRegionObserver.SKIP_REGION_BOUNDARY_CHECK, Bytes.toBytes(true));
                 final TableResultIterator tableResultIterator = new TableResultIterator(queryPlan.getContext(),
                         queryPlan.getTableRef(), scan, readMetrics.allotMetric(SCAN_BYTES, tableName));
                 PeekingResultIterator peekingResultIterator = LookAheadResultIterator.wrap(tableResultIterator);

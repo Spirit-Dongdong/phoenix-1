@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.apache.phoenix</groupId>
     <artifactId>phoenix</artifactId>
-    <version>GIO-1.1.4</version>
+    <version>GIO-1.1.5</version>
   </parent>
   <artifactId>phoenix-server-client</artifactId>
   <name>Phoenix Query Server Client</name>
@@ -94,6 +94,10 @@
       <!-- a dependency for the thin-client uberjar -->
       <groupId>sqlline</groupId>
       <artifactId>sqlline</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.phoenix</groupId>
+      <artifactId>phoenix-core</artifactId>
     </dependency>
   </dependencies>
 </project>

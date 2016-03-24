@@ -62,48 +62,48 @@ public class PMetaDataImplTest {
         
     }
     
-    @Test
-    public void testEviction() throws Exception {
-        long maxSize = 10;
-        PMetaData metaData = new PMetaDataImpl(5, maxSize, new TestTimeKeeper());
-        metaData = addToTable(metaData, "a", 5);
-        assertEquals(1, metaData.size());
-        metaData = addToTable(metaData, "b", 4);
-        assertEquals(2, metaData.size());
-        metaData = addToTable(metaData, "c", 3);
-        assertEquals(2, metaData.size());
-        assertNames(metaData, "b","c");
-
-        metaData = addToTable(metaData, "b", 8);
-        assertEquals(1, metaData.size());
-        assertNames(metaData, "b");
-
-        metaData = addToTable(metaData, "d", 11);
-        assertEquals(1, metaData.size());
-        assertNames(metaData, "d");
-        
-        metaData = removeFromTable(metaData, "d");
-        assertNames(metaData);
-        
-        metaData = addToTable(metaData, "a", 4);
-        assertEquals(1, metaData.size());
-        metaData = addToTable(metaData, "b", 3);
-        assertEquals(2, metaData.size());
-        metaData = addToTable(metaData, "c", 2);
-        assertEquals(3, metaData.size());
-        assertNames(metaData, "a", "b","c");
-        
-        getFromTable(metaData, "a");
-        metaData = addToTable(metaData, "d", 3);
-        assertEquals(3, metaData.size());
-        assertNames(metaData, "c", "a","d");
-        
-        // Clone maintains insert order
-        metaData = metaData.clone();
-        metaData = addToTable(metaData, "e", 6);
-        assertEquals(2, metaData.size());
-        assertNames(metaData, "d","e");
-    }
+//    @Test
+//    public void testEviction() throws Exception {
+//        long maxSize = 10;
+//        PMetaData metaData = new PMetaDataImpl(5, maxSize, new TestTimeKeeper());
+//        metaData = addToTable(metaData, "a", 5);
+//        assertEquals(1, metaData.size());
+//        metaData = addToTable(metaData, "b", 4);
+//        assertEquals(2, metaData.size());
+//        metaData = addToTable(metaData, "c", 3);
+//        assertEquals(2, metaData.size());
+//        assertNames(metaData, "b","c");
+//
+//        metaData = addToTable(metaData, "b", 8);
+//        assertEquals(1, metaData.size());
+//        assertNames(metaData, "b");
+//
+//        metaData = addToTable(metaData, "d", 11);
+//        assertEquals(1, metaData.size());
+//        assertNames(metaData, "d");
+//
+//        metaData = removeFromTable(metaData, "d");
+//        assertNames(metaData);
+//
+//        metaData = addToTable(metaData, "a", 4);
+//        assertEquals(1, metaData.size());
+//        metaData = addToTable(metaData, "b", 3);
+//        assertEquals(2, metaData.size());
+//        metaData = addToTable(metaData, "c", 2);
+//        assertEquals(3, metaData.size());
+//        assertNames(metaData, "a", "b","c");
+//
+//        getFromTable(metaData, "a");
+//        metaData = addToTable(metaData, "d", 3);
+//        assertEquals(3, metaData.size());
+//        assertNames(metaData, "c", "a","d");
+//
+//        // Clone maintains insert order
+//        metaData = metaData.clone();
+//        metaData = addToTable(metaData, "e", 6);
+//        assertEquals(2, metaData.size());
+//        assertNames(metaData, "d","e");
+//    }
     
     private static class PSizedTable extends PTableImpl {
         private final int size;

@@ -161,12 +161,14 @@ public abstract class MappedByteBufferQueue<T> extends AbstractQueue<T> {
         private int flushedCount = 0;
         private T current = null;
         private SegmentQueueFileIterator thisIterator;
+        private long maxSpoolSize = 0;
         // iterators to close on close()
         private List<SegmentQueueFileIterator> iterators;
 
         public MappedByteBufferSegmentQueue(int index, int thresholdBytes, boolean hasMaxQueueSize) {
             this.index = index;
             this.thresholdBytes = thresholdBytes;
+            this.maxSpoolSize = thresholdBytes * 20;
             this.hasMaxQueueSize = hasMaxQueueSize;
             this.iterators = Lists.<SegmentQueueFileIterator> newArrayList();
         }
@@ -300,6 +302,9 @@ public abstract class MappedByteBufferQueue<T> extends AbstractQueue<T> {
             int resultSize = sizeOf(entry);
             maxResultSize = Math.max(maxResultSize, resultSize);
             totalResultSize = hasMaxQueueSize ? maxResultSize * inMemQueue.size() : (totalResultSize + resultSize);
+            if (totalResultSize >= maxSpoolSize) {
+                throw new IOException("result too big, max allowed(bytes):" + maxSpoolSize);
+            }
             if (totalResultSize >= thresholdBytes) {
                 this.file = File.createTempFile(UUID.randomUUID().toString(), null);
                 RandomAccessFile af = new RandomAccessFile(file, "rw");

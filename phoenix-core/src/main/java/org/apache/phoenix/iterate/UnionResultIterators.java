@@ -90,6 +90,8 @@ public class UnionResultIterators implements ResultIterators {
                 scans.addAll(plan.getScans());
             } catch (SQLException e) {
                 exceptions.add(e);
+            } catch (Exception e) {
+                exceptions.add(new SQLException("unexpected exception",e));
             }
         }
     }

@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 class PhoenixRDD(sc: SparkContext, table: String, columns: Seq[String],
                  predicate: Option[String] = None, zkUrl: Option[String] = None,
                  @transient conf: Configuration)
-  extends RDD[PhoenixRecordWritable](sc, Nil) with Logging {
+  extends RDD[PhoenixRecordWritable](sc, Nil) {
 
   @transient lazy val phoenixConf = {
     getPhoenixConfiguration
@@ -95,7 +95,7 @@ class PhoenixRDD(sc: SparkContext, table: String, columns: Seq[String],
   }
 
   // Convert our PhoenixRDD to a DataFrame
-  def toDataFrame(sqlContext: SQLContext): DataFrame = {
+  def toDataFrame(sqlContext: SQLContext) = {
     val columnList = PhoenixConfigurationUtil
       .getSelectColumnMetadataList(new Configuration(phoenixConf))
       .asScala
@@ -143,7 +143,7 @@ class PhoenixRDD(sc: SparkContext, table: String, columns: Seq[String],
     case t if t.isInstanceOf[PTinyintArray] || t.isInstanceOf[PUnsignedTinyintArray] => ArrayType(ByteType, containsNull = true)
     case t if t.isInstanceOf[PFloatArray] || t.isInstanceOf[PUnsignedFloatArray] => ArrayType(FloatType, containsNull = true)
     case t if t.isInstanceOf[PDoubleArray] || t.isInstanceOf[PUnsignedDoubleArray] => ArrayType(DoubleType, containsNull = true)
-    case t if t.isInstanceOf[PDecimalArray] => ArrayType(DecimalType(), containsNull = true)
+    case t if t.isInstanceOf[PDecimalArray] => ArrayType(DecimalType(38, 18), containsNull = true)
     case t if t.isInstanceOf[PTimestampArray] || t.isInstanceOf[PUnsignedTimestampArray] => ArrayType(TimestampType, containsNull = true)
     case t if t.isInstanceOf[PDateArray] || t.isInstanceOf[PUnsignedDateArray] => ArrayType(TimestampType, containsNull = true)
     case t if t.isInstanceOf[PTimeArray] || t.isInstanceOf[PUnsignedTimeArray] => ArrayType(TimestampType, containsNull = true)

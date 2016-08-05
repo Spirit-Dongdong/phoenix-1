@@ -17,11 +17,10 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.io.NullWritable
 import org.apache.phoenix.mapreduce.PhoenixOutputFormat
 import org.apache.phoenix.mapreduce.util.{ColumnInfoToStringEncoderDecoder, PhoenixConfigurationUtil}
-import org.apache.spark.Logging
 import org.apache.spark.sql.DataFrame
 import scala.collection.JavaConversions._
 
-class DataFrameFunctions(data: DataFrame) extends Logging with Serializable {
+class DataFrameFunctions(data: DataFrame) extends Serializable {
 
   def saveToPhoenix(tableName: String, conf: Configuration = new Configuration,
                     zkUrl: Option[String] = None): Unit = {
@@ -35,7 +34,7 @@ class DataFrameFunctions(data: DataFrame) extends Logging with Serializable {
      // Retrieve the schema field names, need to do this outside of mapPartitions
      val fieldArray = data.schema.fieldNames
      // Map the row objects into PhoenixRecordWritable
-     val phxRDD = data.mapPartitions{ rows =>
+     val phxRDD = data.rdd.mapPartitions{ rows =>
  
        // Create a within-partition config to retrieve the ColumnInfo list
        @transient val partitionConfig = ConfigurationUtil.getOutputConfiguration(tableName, fieldArray, zkUrlFinal)

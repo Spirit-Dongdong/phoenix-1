@@ -28,15 +28,15 @@
   <parent>
     <groupId>org.apache.phoenix</groupId>
     <artifactId>phoenix</artifactId>
-    <version>GIO-1.1.6</version>
+    <version>GIO-1.2.0</version>
   </parent>
   <artifactId>phoenix-spark</artifactId>
   <name>Phoenix - Spark</name>
 
   <properties>
-    <spark.version>GIO-1.5.1</spark.version>
-    <scala.version>2.10.4</scala.version>
-    <scala.binary.version>2.10</scala.binary.version>
+    <spark.version>2.0.0</spark.version>
+    <scala.version>2.11.8</scala.version>
+    <scala.binary.version>2.11</scala.binary.version>
     <top.dir>${project.basedir}/..</top.dir>
   </properties>
 

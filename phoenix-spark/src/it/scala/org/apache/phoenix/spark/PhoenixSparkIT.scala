@@ -16,6 +16,7 @@ package org.apache.phoenix.spark
 import java.sql.{Connection, DriverManager}
 import java.util.Date
 
+import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.HConstants
 import org.apache.phoenix.end2end.BaseHBaseManagedTimeIT
 import org.apache.phoenix.query.BaseTest
@@ -386,7 +387,7 @@ class PhoenixSparkIT extends FunSuite with Matchers with BeforeAndAfterAll {
       "zkUrl" -> quorumAddress))
 
     // Save to TABLE21_COPY
-    df.save("org.apache.phoenix.spark", SaveMode.Overwrite, Map("table" -> "TABLE1_COPY", "zkUrl" -> quorumAddress))
+    df.saveToPhoenix("TABLE1_COPY", new Configuration, Some(quorumAddress))
 
     // Verify results
     stmt = conn.createStatement()

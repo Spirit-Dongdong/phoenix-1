@@ -73,8 +73,8 @@ case class PhoenixRelation(tableName: String, zkUrl: String)(@transient val sqlC
       }
 
       f match {
-        case And(leftFilter, rightFilter) => filter.append(buildFilter(Array(leftFilter, rightFilter)))
-        case Or(leftFilter, rightFilter) => filter.append(buildFilter(Array(leftFilter)) + " OR " + buildFilter(Array(rightFilter)))
+        case And(leftFilter, rightFilter) => filter.append("(" + buildFilter(Array(leftFilter, rightFilter)) + ")")
+        case Or(leftFilter, rightFilter) => filter.append("(" + buildFilter(Array(leftFilter)) + " OR " + buildFilter(Array(rightFilter)) + ")")
         case Not(aFilter) => filter.append(" NOT " + buildFilter(Array(aFilter)))
         case EqualTo(attr, value) => filter.append(s" $attr = ${compileValue(value)}")
         case GreaterThan(attr, value) => filter.append(s" $attr > ${compileValue(value)}")

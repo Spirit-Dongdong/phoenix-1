@@ -18,8 +18,8 @@
 package org.apache.phoenix.iterate;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +31,6 @@ import org.apache.phoenix.monitoring.OverAllQueryMetrics;
 import org.apache.phoenix.monitoring.ReadMetricQueue;
 import org.apache.phoenix.query.KeyRange;
 import org.apache.phoenix.util.ServerUtil;
-
-import com.google.common.collect.Lists;
 
 
 /**
@@ -55,12 +53,12 @@ public class UnionResultIterators implements ResultIterators {
         this.parentStmtCtx = parentStmtCtx;
         this.plans = plans;
         int nPlans = plans.size();
-        iterators = Lists.newArrayListWithExpectedSize(nPlans);
-        splits = Lists.newArrayListWithExpectedSize(nPlans * 30);
-        scans = Lists.newArrayListWithExpectedSize(nPlans * 10);
-        readMetricsList = Lists.newArrayListWithCapacity(nPlans);
-        overAllQueryMetricsList = Lists.newArrayListWithCapacity(nPlans);
-        exceptions = Lists.newArrayListWithCapacity(nPlans);
+        iterators = new Vector<>(nPlans);
+        splits = new Vector<>(nPlans * 30, nPlans);
+        scans = new Vector<>(nPlans * 10, nPlans);
+        readMetricsList = new Vector<>(nPlans);
+        overAllQueryMetricsList = new Vector<>(nPlans);
+        exceptions = new Vector<>(nPlans);
         ThreadPoolExecutor executor = new ThreadPoolExecutor(plans.size(), plans.size(), plans.size(), TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
         for (QueryPlan plan : this.plans) {

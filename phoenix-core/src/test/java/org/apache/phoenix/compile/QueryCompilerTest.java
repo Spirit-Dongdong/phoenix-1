@@ -35,10 +35,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
@@ -1944,41 +1941,63 @@ public class QueryCompilerTest extends BaseConnectionlessQueryTest {
         }
     }
 
-//     Ignore this test since we implement multi-thread UNION-ALL
-//     @Test
-//     public void testNoFromClauseSelect() throws Exception {
-//         Connection conn = DriverManager.getConnection(getUrl());
-//         ResultSet rs = conn.createStatement().executeQuery("SELECT 2 * 3 * 4, 5 + 1");
-//         assertTrue(rs.next());
-//         assertEquals(24, rs.getInt(1));
-//         assertEquals(6, rs.getInt(2));
-//         assertFalse(rs.next());
-//
-//         String query =
-//                 "SELECT 'a' AS col\n" +
-//                 "UNION ALL\n" +
-//                 "SELECT 'b' AS col\n" +
-//                 "UNION ALL\n" +
-//                 "SELECT 'c' AS col";
-//         rs = conn.createStatement().executeQuery(query);
-//         assertTrue(rs.next());
-//         assertEquals("a", rs.getString(1));
-//         assertTrue(rs.next());
-//         assertEquals("b", rs.getString(1));
-//         assertTrue(rs.next());
-//         assertEquals("c", rs.getString(1));
-//         assertFalse(rs.next());
-//
-//         rs = conn.createStatement().executeQuery("SELECT * FROM (" + query + ")");
-//         assertTrue(rs.next());
-//         assertEquals("a", rs.getString(1));
-//         assertTrue(rs.next());
-//         assertEquals("b", rs.getString(1));
-//         assertTrue(rs.next());
-//         assertEquals("c", rs.getString(1));
-//         assertFalse(rs.next());
-//     }
-     
+    @Test
+    public void testNoFromClauseSelect() throws Exception {
+        Connection conn = DriverManager.getConnection(getUrl());
+        ResultSet rs = conn.createStatement().executeQuery("SELECT 2 * 3 * 4, 5 + 1");
+        assertTrue(rs.next());
+        assertEquals(24, rs.getInt(1));
+        assertEquals(6, rs.getInt(2));
+        assertFalse(rs.next());
+
+        String query =
+                "SELECT 'a' AS col\n" +
+                        "UNION ALL\n" +
+                        "SELECT 'b' AS col\n" +
+                        "UNION ALL\n" +
+                        "SELECT 'c' AS col";
+        rs = conn.createStatement().executeQuery(query);
+
+        HashSet<String> results = new HashSet<>();
+        while (rs.next()) {
+            results.add(rs.getString(1));
+        }
+
+        assertEquals(3, results.size());
+        assertTrue(results.contains("a") && results.contains("b") && results.contains("c"));
+        results.clear();
+
+        rs = conn.createStatement().executeQuery("SELECT * FROM (" + query + ")");
+        while (rs.next()) {
+            results.add(rs.getString(1));
+        }
+
+        assertEquals(3, results.size());
+        assertTrue(results.contains("a") && results.contains("b") && results.contains("c"));
+    }
+
+    @Test
+    public void testParallelUnion() throws Exception {
+        Connection conn = DriverManager.getConnection(getUrl());
+        int i = 1000;
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < i; j ++) {
+            sb.append("SELECT '" + j + "' AS col\n");
+            if (j < i - 1) {
+                sb.append(" UNION ALL \n");
+            }
+        }
+
+        String query = sb.toString();
+        ResultSet rs = conn.createStatement().executeQuery(query);
+
+        HashSet<String> results = new HashSet<>();
+        while (rs.next()) {
+            results.add(rs.getString(1));
+        }
+
+        assertEquals(1000, results.size());
+    }
      
      @Test
      public void testFailNoFromClauseSelect() throws Exception {

@@ -1,15 +1,3 @@
-import org.apache.phoenix.expression.function.SetBitFunction;
-import org.apache.phoenix.expression.function.SetByteFunction;
-import org.apache.phoenix.expression.function.BitMapAndFunction;
-import org.apache.phoenix.expression.function.BitMapOrFunction;
-import org.apache.phoenix.expression.function.BitMapAndNotFunction;
-import org.apache.phoenix.expression.function.BitMapCountFunction;
-    GetBitFunction(GetBitFunction.class),
-    SetBitFunction(SetBitFunction.class),
-    BitMapAndFunction(BitMapAndFunction.class),
-    BitMapOrFunction(BitMapOrFunction.class),
-    BitMapAndNotFunction(BitMapAndNotFunction.class),
-    BitMapCountFunction(BitMapCountFunction.class),
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -54,6 +42,10 @@ import org.apache.phoenix.expression.function.CoalesceFunction;
 import org.apache.phoenix.expression.function.ConvertTimezoneFunction;
 import org.apache.phoenix.expression.function.CountAggregateFunction;
 import org.apache.phoenix.expression.function.BitMapMergeFunction;
+import org.apache.phoenix.expression.function.BitMapAndFunction;
+import org.apache.phoenix.expression.function.BitMapOrFunction;
+import org.apache.phoenix.expression.function.BitMapAndNotFunction;
+import org.apache.phoenix.expression.function.BitMapCountFunction;
 import org.apache.phoenix.expression.function.DayOfMonthFunction;
 import org.apache.phoenix.expression.function.DecodeFunction;
 import org.apache.phoenix.expression.function.DistinctCountAggregateFunction;
@@ -165,6 +157,10 @@ public enum ExpressionType {
     CountAggregateFunction(CountAggregateFunction.class),
     SumAggregateFunction(SumAggregateFunction.class),
     BitMapMergeFunction(BitMapMergeFunction.class),
+    BitMapAndFunction(BitMapAndFunction.class),
+    BitMapOrFunction(BitMapOrFunction.class),
+    BitMapAndNotFunction(BitMapAndNotFunction.class),
+    BitMapCountFunction(BitMapCountFunction.class),
     MinAggregateFunction(MinAggregateFunction.class),
     MaxAggregateFunction(MaxAggregateFunction.class),
     StringBasedLikeExpression(StringBasedLikeExpression.class),

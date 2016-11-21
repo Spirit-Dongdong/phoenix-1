@@ -231,6 +231,7 @@
       <artifactId>RoaringBitmap</artifactId>
       <version>0.6.26-GIO1.1</version>
     </dependency>
+    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr</artifactId>
     </dependency>

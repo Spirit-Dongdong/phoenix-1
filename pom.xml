@@ -57,6 +57,10 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>growingio release</id>
+      <url>http://cnjmtr:8081/nexus/content/groups/public/</url>
+    </repository>
   </repositories>
 
   <parent>

@@ -230,6 +230,12 @@
       <groupId>io.growing.roaringbitmap</groupId>
       <artifactId>RoaringBitmap</artifactId>
       <version>0.6.26-GIO1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>

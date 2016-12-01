@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.phoenix</groupId>
   <artifactId>phoenix</artifactId>
-  <version>GIO-2.0.0-4.5.1</version>
+  <version>GIO-2.0.1-4.5.1</version>
   <packaging>pom</packaging>
   <name>Apache Phoenix</name>
   <description>A SQL layer over HBase</description>
@@ -59,7 +59,7 @@
     </repository>
     <repository>
       <id>growingio release</id>
-      <url>http://cnjmtr:8081/nexus/content/groups/public/</url>
+      <url>http://54.223.132.19:8081/nexus/content/groups/public/</url>
     </repository>
   </repositories>
 

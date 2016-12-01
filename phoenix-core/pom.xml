@@ -227,9 +227,9 @@
     <!-- Make sure we have all the antlr dependencies -->
     <!-- Transaction dependencies -->
     <dependency>
-      <groupId>io.growing.roaringbitmap</groupId>
-      <artifactId>RoaringBitmap</artifactId>
-      <version>0.6.26-GIO1.1</version>
+      <groupId>io.growing</groupId>
+      <artifactId>bitmap</artifactId>
+      <version>0.6.26-GIO1.3</version>
       <exclusions>
         <exclusion>
           <groupId>org.scala-lang</groupId>
